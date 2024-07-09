@@ -64,6 +64,45 @@ async function run() {
       res.send(result);
     });
 
+    // updating from mongodb
+
+    //finding data from mongodb
+
+    app.get("/createdAssignment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await createdAssignmentCollection.findOne(query);
+      res.send(result);
+    });
+
+    //updating data of mongodb data
+
+    app.put("/createdAssignment/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedAssignment = req.body;
+
+      const createdAssignment = {
+        $set: {
+          title: updatedAssignment.title,
+          description: updatedAssignment.description,
+          marks: updatedAssignment.marks,
+          difficulty: updatedAssignment.difficulty,
+          startDate: updatedAssignment.startDate,
+          photo: updatedAssignment.photo,
+        },
+      };
+
+      const result = await createdAssignmentCollection.updateOne(
+        filter,
+        createdAssignment,
+        options
+      );
+      res.send(result);
+      console.log(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
