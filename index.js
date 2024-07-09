@@ -103,6 +103,20 @@ async function run() {
       console.log(result);
     });
 
+    //2. for submission assignment
+
+    const createdSubmissionCollection = client
+      .db("reset-Assignment-11")
+      .collection("submission");
+
+    //sending on server ie. post
+    app.post("/submission", async (req, res) => {
+      const newCollection = req.body;
+      console.log(newCollection);
+      const result = await createdSubmissionCollection.insertOne(newCollection);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
