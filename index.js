@@ -46,7 +46,11 @@ async function run() {
     //for reading from mongodb
 
     app.get("/createdAssignment", async (req, res) => {
-      const cursor = createdAssignmentCollection.find();
+      let query = {};
+      if (req.query?.difficulty) {
+        query = { difficulty: req.query.difficulty };
+      }
+      const cursor = createdAssignmentCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
