@@ -29,7 +29,27 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    //ajshdjiuahsdjhasjkdhjkahsdjkhajkshdjasdjals
+    //1. for creating assignment
+
+    const createdAssignmentCollection = client
+      .db("reset-Assignment-11")
+      .collection("createdAssignments");
+
+    //sending on server ie. post
+    app.post("/createdAssignment", async (req, res) => {
+      const newCollection = req.body;
+      console.log(newCollection);
+      const result = await createdAssignmentCollection.insertOne(newCollection);
+      res.send(result);
+    });
+
+    //for reading from mongodb
+
+    app.get("/createdAssignment", async (req, res) => {
+      const cursor = createdAssignmentCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -38,7 +58,7 @@ async function run() {
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    //await client.close();
   }
 }
 run().catch(console.dir);
