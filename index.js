@@ -117,10 +117,23 @@ async function run() {
       res.send(result);
     });
 
+    //getting data according to submitter email
+
     app.get("/submission", async (req, res) => {
       let query = {};
       if (req.query?.submitterEmail) {
         query = { submitterEmail: req.query.submitterEmail };
+      }
+      const cursor = createdSubmissionCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    //getting data according to status
+
+    app.get("/submission", async (req, res) => {
+      let query = {};
+      if (req.query?.status) {
+        query = { status: req.query.status };
       }
       const cursor = createdSubmissionCollection.find(query);
       const result = await cursor.toArray();
