@@ -117,6 +117,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/submission", async (req, res) => {
+      let query = {};
+      if (req.query?.submitterEmail) {
+        query = { submitterEmail: req.query.submitterEmail };
+      }
+      const cursor = createdSubmissionCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
