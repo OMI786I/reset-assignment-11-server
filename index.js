@@ -34,14 +34,23 @@ const client = new MongoClient(uri, {
 //middlewares
 
 const logger = (req, res, next) => {
-  console.log(req.method, req.url);
+  console.log("log: info", req.method, req.url);
   next();
 };
 
 const verifyToken = (req, res, next) => {
   const token = req?.cookies?.token;
   console.log("token in the middle wear", token);
-  next();
+  if (!token) {
+    return res.status(401).send({ message: "unauthorized access" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "unauthorized access" });
+    }
+    req.user = decoded;
+    next();
+  });
 };
 
 async function run() {
@@ -53,7 +62,7 @@ async function run() {
 
     app.post("/jwt", async (req, res) => {
       const user = req.body;
-      console.log(user);
+      console.log("user", user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
       });
@@ -163,6 +172,11 @@ async function run() {
     //getting data according to submitter email & status
 
     app.get("/submission", logger, verifyToken, async (req, res) => {
+      console.log(req.query.submitterEmail);
+      console.log("token owner info", req.user);
+      if (req.user.email !== req.query.submitterEmail) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
       let query = {};
       if (req.query?.submitterEmail) {
         query = { submitterEmail: req.query.submitterEmail };
