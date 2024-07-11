@@ -124,17 +124,11 @@ async function run() {
       if (req.query?.submitterEmail) {
         query = { submitterEmail: req.query.submitterEmail };
       }
-      const cursor = createdSubmissionCollection.find(query);
-      const result = await cursor.toArray();
-      res.send(result);
-    });
-    //getting data according to status
 
-    app.get("/submission", async (req, res) => {
-      let query = {};
       if (req.query?.status) {
         query = { status: req.query.status };
       }
+
       const cursor = createdSubmissionCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
@@ -147,6 +141,31 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await createdSubmissionCollection.findOne(query);
       res.send(result);
+    });
+
+    //updating data of mongodb data
+
+    app.put("/submission/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedAssignment = req.body;
+
+      const updateMarks = {
+        $set: {
+          obtainedMarks: updatedAssignment.obtainedMarks,
+          status: updatedAssignment.status,
+          feedback: updatedAssignment.feedback,
+        },
+      };
+
+      const result = await createdSubmissionCollection.updateOne(
+        filter,
+        updateMarks,
+        options
+      );
+      res.send(result);
+      console.log(result);
     });
 
     // Send a ping to confirm a successful connection
