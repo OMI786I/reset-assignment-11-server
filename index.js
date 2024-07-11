@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -28,6 +29,15 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    //auth related api
+
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const token = jwt.sign(user, "secret", { expiresIn: "1h" });
+      req.send(user);
+    });
 
     //1. for creating assignment
 
@@ -117,7 +127,7 @@ async function run() {
       res.send(result);
     });
 
-    //getting data according to submitter email
+    //getting data according to submitter email & status
 
     app.get("/submission", async (req, res) => {
       let query = {};
