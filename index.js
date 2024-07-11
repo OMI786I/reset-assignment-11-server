@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -15,7 +16,7 @@ app.use(
   })
 );
 app.use(express.json());
-
+app.use(cookieParser());
 //
 //
 
@@ -29,6 +30,19 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
+//middlewares
+
+const logger = (req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+};
+
+const verifyToken = (req, res, next) => {
+  const token = req?.cookies?.token;
+  console.log("token in the middle wear", token);
+  next();
+};
 
 async function run() {
   try {
@@ -148,7 +162,7 @@ async function run() {
 
     //getting data according to submitter email & status
 
-    app.get("/submission", async (req, res) => {
+    app.get("/submission", logger, verifyToken, async (req, res) => {
       let query = {};
       if (req.query?.submitterEmail) {
         query = { submitterEmail: req.query.submitterEmail };
