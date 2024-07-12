@@ -171,12 +171,7 @@ async function run() {
 
     //getting data according to submitter email & status
 
-    app.get("/submission", logger, verifyToken, async (req, res) => {
-      console.log(req.query.submitterEmail);
-      console.log("token owner info", req.user);
-      if (req.user.email !== req.query.submitterEmail) {
-        return res.status(403).send({ message: "forbidden access" });
-      }
+    app.get("/submission", async (req, res) => {
       let query = {};
       if (req.query?.submitterEmail) {
         query = { submitterEmail: req.query.submitterEmail };
