@@ -113,6 +113,10 @@ async function run() {
       if (req.query?.difficulty) {
         query = { difficulty: req.query.difficulty };
       }
+      if (req.query?.search) {
+        query.title = { $regex: req.query.search, $options: "i" };
+      }
+
       const cursor = createdAssignmentCollection
         .find(query)
         .skip(page * size)
